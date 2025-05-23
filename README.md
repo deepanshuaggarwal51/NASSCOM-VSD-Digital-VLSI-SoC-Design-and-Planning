@@ -1,4 +1,4 @@
-<span style="color: #ff2400 ; font-family: 'LM Sans 10'; font-weight: 'bold'">
+<span style="color: #ff2400 ; font-weight: 'bold'">
 
 # NASSCOM-VSD Digital VLSI SoC Design and Planning Workshop
 
@@ -8,7 +8,7 @@ This repository provides the documentation that is prepared while doing the work
 
 ## Table of contents
 
-<span style="color: #000000; font-family: 'Nimbus Sans'">
+<span style="color: #000000">
 
 I. [Inception of open-source EDA, openLANE, Sky130 PDK]()
 
@@ -101,14 +101,14 @@ II. [Good floorplan vs bad floorplan and introduction to library cells](#ii-good
 ##### Introduction to all components of open-source digital ASIC design
 ##### Simplified RTL2GDS flow
 ##### Introduction to openLANE and STRIVE chipsets
-OpenLane is an automated RTL to GDSII flow based on several components including OpenROAD, Yosys, Magic, Netgen, CVC, SPEF-Extractor, KLayout and a number of custom scripts for design exploration and optimization. It also provides a number of custom scripts for design exploration and optimization. OpenLane abstracts the underlying open source utilities, and allows users to configure all their behavior with just a single configuration file. For more details, read the openLANE documentation at [openLANE](https://openlane.readthedocs.io/).
+OpenLane is an automated RTL to GDSII flow based on several components, including OpenROAD, Yosys, Magic, Netgen, CVC, SPEF-Extractor, KLayout and a number of custom scripts for design exploration and optimisation. It also provides a number of custom scripts for design exploration and optimisation. OpenLane abstracts the underlying open source utilities and allows users to configure all their behaviour with just a single configuration file. For more details, read the openLANE documentation at [openLANE](https://openlane.readthedocs.io/).
 
-The main goal of the openLANE flow is to produce a clean GDSII with no human intervation (no-human-in-the-loop) with zero violations such as> zero LVS (Layout vs schematic) violations, zero DRC (design rule check) violations and zero timing violations.
+The main goal of the openLANE flow is to produce a clean GDSII with no human intervention (no-human-in-the-loop) with zero violations, such as> zero LVS (Layout vs schematic) violations, zero DRC (design rule check) violations and zero timing violations.
 
-OpenLANE is tuned for skyWater130nm open PDK but other PDKs can also be used (see custom PDKs with [openLANE](https://openlane.readthedocs.io/en/latest/usage/custom_pdk_builds.html)). It can be used to harden Macros and chips. There are basically two modes of operation
-> Autonomus: As the name suggests, it automates the flow by automatically excecuting different stages in a predefined order and results into the final GDS file.
+OpenLANE is tuned for skyWater130nm open PDK, but other PDKs can also be used (see custom PDKs with [openLANE](https://openlane.readthedocs.io/en/latest/usage/custom_pdk_builds.html)). It can be used to harden Macros and chips. There are basically two modes of operation
+> Autonomous: As the name suggests, it automates the flow by automatically executing different stages in a predefined order and results in the final GDS file.
 
-> Interactive: In the interactive mode, it runs iteratively and we need to perform each stage in a particular ordder. We can also change any environmental variable on-the-fly and re-run a particular stage.
+> Interactive: In the interactive mode, it runs iteratively, and we need to perform each stage in a particular order. We can also change any environmental variable on the fly and re-run a particular stage.
 
 ##### Introduction to openLANE detailed ASIC design flow
 
@@ -117,36 +117,36 @@ Ref: This image is downloaded from [openLANE docs](https://openlane.readthedocs.
 
 #### 3. Get familiar to open-source EDA tools
 ##### OpenLANE directory structure in detail
-The image below shows the openlane directoty structure inside the openlane working directory:
+The image below shows the openlane directory structure inside the openlane working directory:
 
 ![alt text](<pics/Screenshot from 2025-05-23 11-46-39.png>)
 
 The two folders `drc_tests` and `vsdstdcelldesign` are added later by cloning the repositories and are explained in further sections.
 
-Here we are working in Sky130_fd_sc_hd PDK variant. where, "sky130" is process name or node name. "fd" stands for a foundary name (skyWater foundary)."sc" means standerd cell librery files and the last one "hd" stands for high density.
+Here we are working in the Sky130_fd_sc_hd PDK variant. where "sky130" is the process name or node name. "fd" stands for a foundry name (skywater foundry)."sc" means standard cell library files, and the last one "hd" stands for high density.
 
 For example, a particular variant `sky130_fd_sc_hd` contains many technology files like verilog, spice, techlef, meglef, mag, gds, cdl, lib, lef, etc. as shown below (level-1 contents).
 
 ![alt text](<pics/Screenshot from 2025-05-23 12-03-32.png>)
 
 ##### Design preparation step
-After entering into the openLANE working directory, we first type `docker` and then invoke the openLANE tool by executing the comand `./flow.tcl -interactive` for interactive openLANE flow. Where the tag `-interactive` is used for the interactive mode, where we will do step by step process. (see figure below)
+After entering into the openLANE working directory, we first type `docker` and then invoke the openLANE tool by executing the command `./flow.tcl -interactive` for interactive openLANE flow. Where the tag `-interactive` is used for the interactive mode, where we will do a step-by-step process. (see figure below)
 
 ![alt text](<pics/Screenshot from 2025-05-23 12-17-07.png>)
 
-Now, we need to first prepare the configurations files and set the environment variables for the design which we are insterested in. Before doing that, if we open the designs folder in openlane, there are many designs that are already built. (see figure below)
+Now, we need to first prepare the configuration files and set the environment variables for the design which we are interested in. Before doing that, if we open the designs folder in openLane, there are many designs that are already built. (see figure below)
 
 ![alt text](<pics/Screenshot from 2025-05-23 12-25-33.png>)
 
-For example, we open up the `picorv32a` design. In this design we can see that there are many files. All of them are required to build the .gds file for picorv32a from its verilog file inside the `src`.
+For example, we open up the `picorv32a` design. In this design, we can see that there are many files. All of them are required to build the .gds file for picorv32a from its verilog file inside the `src`.
 
 ![alt text](<pics/Screenshot from 2025-05-23 12-46-05.png>)
 
-The `config.tcl` file contains some details about the design and sets up some environment variables. For example, clock period, clock port etc. Please note that, the latest version of openLANE still has the compatibility for `config.tcl` but they recommend to use `config.json`. (see [here](https://openlane.readthedocs.io/en/latest/reference/configuration_files.html))
+The `config.tcl` file contains some details about the design and sets up some environment variables. For example, clock period, clock port, etc. Please note that the latest version of openLANE still has compatibility for `config.tcl`, but they recommend using `config.json`. (see [here](https://openlane.readthedocs.io/en/latest/reference/configuration_files.html))
 
 ![alt text](<pics/Screenshot from 2025-05-23 12-37-07.png>)
 
-Now, we go back to the openlane command line tool window and prpare the files for design flow of `picorv32a`. To do the design preparation for a design, we invoke the command `prep -design picorv32a`.
+Now, we go back to the openlane command line tool window and prepare the files for the design flow of `picorv32a`. To do the design preparation for a design, we invoke the command `prep -design picorv32a`.
 
 ![alt text](<pics/Screenshot from 2025-05-23 12-50-33.png>)
 
@@ -159,9 +159,9 @@ Within the `runs` directory, a directory with a date (in DD-MM format) is create
 
 ![alt text](<pics/Screenshot from 2025-05-23 12-53-35.png>)
 
-Here the `config.tcl` file is created to inform the user about what all the default parameters are taken or used in the design preparation step for picorv32a.  
-The directoty `reports` will contain the reports as we run the various stages (presently empty), and the `results` directory will contain the results which will be explained in later sections.  
-In the `tmp` directory, `merged.lef` file is available which was created in preparation time. If we open this merged.lef file, we get all the wire or layer level and cell level information.
+Here, the `config.tcl` file is created to inform the user about what all the default parameters are taken or used in the design preparation step for picorv32a.  
+The directory `reports` will contain the reports as we run the various stages (presently empty), and the `results` directory will contain the results, which will be explained in later sections.  
+In the `tmp` directory, `merged.lef` file is available, which was created in preparation time. If we open this merged.lef file, we get all the wire or layer level and cell level information.
 
 ![alt text](<pics/Screenshot from 2025-05-23 13-00-43.png>)
 
@@ -170,7 +170,7 @@ Now, we come back to the openlane and run the very first step, which is synthesi
 ![alt text](<pics/Screenshot from 2025-05-23 13-09-19.png>)
 
 ##### OpenLANE project git link description
-Here, I am providing the two github repos link for the openLANE:
+Here, I am providing the two GitHub repo links for the openLANE:
 
 > OpenLANE (OpenROAD project) -> [OpenLane 1](https://github.com/The-OpenROAD-Project/OpenLane)
 
