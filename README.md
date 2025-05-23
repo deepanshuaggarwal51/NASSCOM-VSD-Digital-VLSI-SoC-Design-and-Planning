@@ -175,3 +175,14 @@ Here, I am providing the two GitHub repo links for the openLANE:
 > OpenLANE (OpenROAD project) -> [OpenLane 1](https://github.com/The-OpenROAD-Project/OpenLane)
 
 > OpenLANE (efabless) -> [OpenLANE 2](https://github.com/efabless/openlane2)
+> 
+##### Steps to characterize synthesis results
+IN this subsection, we characterize the synthesis result of the previous subsection and do the _d-flops ratio_ calculation.
+
+$$ \text{d-flop ratio} = \frac{\text{Total \# of d-flops}}{\text{Total \# of cells}}$$
+
+To do this, we first go into the `reports/synthesis` inside the runs directory of the designs and open up the `1-yosys_4.stat.rpt`;
+
+![alt text](<pics/Screenshot from 2025-05-23 13-22-44.png>)
+
+Therefore, the d-flop ratio is $ \text{d-flop ratio} = \frac{1613}{14876} \approx 0.11 $, which implies that there are $11\%$ d-flops.
