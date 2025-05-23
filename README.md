@@ -243,3 +243,77 @@ Alongside the magic GUI window, a magic command line console window also pops up
 ![alt text](<pics/Screenshot from 2025-05-23 20-35-56.png>)
 
 It shows that the horizontal pin is attached to the metal3. Also, just after the horizontal pins, the decap cells are arranged.
+
+#### 2. Library building and placement
+In this section, we move on to the next stage after the floorplan, that is, the placement of the cells. Before delving into the cell placement, we discuss some crucial concepts related to placement.
+
+##### Netlist binding and initial place design
+**Bind netlist with physical cells**:  
+Let us consider a netlist of gates. The representation of logic gates differs from one gate to another, such as a _NOT_ gate is represented as triangularly shaped. In reality, the logic gates have got physical dimensions with finite width and height. Similarly, the flip-flops are also like square boxes. Now, for every component of the netlist, we assign a particular shape with particular dimensions such that they have a finite width and height and a proper shape.
+
+![alt text](<Screenshot from 2025-05-23 20-55-35.png>)
+
+Now we remove all the wires and place all the logic gates, flipflops, and blocks on a shelf in the same way as the books are placed in a library, similarly, the collection of the cells is called a Library.
+
+Precisely, similar to a book library where we find all kinds of books, in the cell library, we find all kinds of gates, flip-flops, etc. In addition to it, the library also has the timing information, such as the time delay of the gates. A library can be divided into two sublibraries,
+- One library consists of shape and size, and
+- Another library might consist only of the delay information.
+
+A library has various flavours of each and every cell, like a same cell can have different sizes in different shelves. The bigger the size of a cell, the lower the resistance path, so it will work faster and will have less delay. We can pick up from these what we want based on the timing condition and available space on the floorplan.
+
+![alt text](<Screenshot from 2025-05-23 21-06-41.png>)
+
+**Placement**: The next step is to take those specific forms and sizes and put them on the floorplan after we have given each gate the appropriate size and shape. We have a specific netlist, a floorplan with input and output ports, and each component of this netlist has a specific size. Thus, we get the logic gates' physical view. The netlist must then be included in the floorplan. We must create the physical view gates on the floorplan using the connection data from the netlist.
+
+![alt text](<Screenshot from 2025-05-23 21-07-56.png>)
+
+The pre-placed cells from the earlier slides are now visible in the layout. The placement will ensure that the pre-placed cell positions remain unaltered. Additionally, it will ensure that no cell is placed on top of the pre-placed cells. In order to maintain timing and minimise latency, we must arrange the physical view of the netlist on the floorplan so that logical connectivity is maintained and that specific circuit interacts with its input and output ports. The remaining components from the netlist will be arranged on the floorplan here initially. Every piece has been positioned so that it is close to both its input and output pins.
+
+However, FF1 of Stage 4 and Din4 are still far away from the others. By adjusting the positioning, we can fix this problem.
+
+![alt text](<Screenshot from 2025-05-23 21-12-31.png>)
+
+##### Optimize placement using estimated wire-length and capacitance
+**Optimize Plecement**: Here, we handle the distance issue in optimal location. Let's use FF1 to Din2 as an example. A wire must go from Din2 to FF1 (yellow), however we will attempt to estimate the capacitances before arranging the design or wiring. In the event that we look at the capacitance from Din2 to yellow FF1, it is significant due to the length of the wire; consequently, the result will likewise be enormous. Due to the large distance, it will be challenging for FF1 to receive the signal in its original form if we transmit it from Din2. In order to maintain the integrity of the signal, we can use various interim measures. This successfully drives the input from Din2 to the FF1. These transitional actions are referred to as Repeaters, which are essentially buffers that recondition the original signal to create a new signal which is just a replication of the original signal and transmits it forward. This process is repeated until we reach the cell where we wish to send the input, ensuring signal integrity. Therefore, the signal integrity issue can be solved by employing repeaters, however as more repeaters are utilised, more space will be used up in the specific design.
+
+##### Final placement optimization
+For example, for the logical sequence of blue FF1 to FF2, the distance between logic gate 2 and FF2 is significant and the requirement of a repeater becomes inevitable, as shown below
+
+![alt text](<pics/Screenshot from 2025-05-23 21-20-35.png>)
+
+Similarly, for the green logical sequence from Din4 -> FF1 -> gate-1 -> gate-2 -> FF2 -> Dout4; we need to place two buffers; 
+
+![alt text](<Screenshot from 2025-05-23 21-22-38.png>)
+
+Each IC design process must go through a number of phases:
+- Logic Synthesis is the first stage to complete. For example, if we have functionality that is programmed as an RTL, we must first turn it into legal hardware. This process is known as Logic Synthesis. The arrangement of gates that will replicate the original functionality that has been defined using an RTL is the output of the logic synthesis.
+- Floorplaning is the next stage of logic synthesis, where we import the logic synthesis output and determine the die and core sizes.
+- Following floorplaning, the next stage is placement, where we take the specific logic cell and arrange it on the chip so that the initial timing is optimal.
+- The clock tree synthesis (CTS) stage comes next, where we make sure that the clock reaches every signal simultaneously and that each one has an equal rise and fall.
+- Routing is the next stage; it must follow a certain flow that is determined by the flip-flop's characterisation.
+- The final phase, static timing analysis (STA), is when we attempt to determine the circuit's maximum attainable frequency, hold time, and setup time. 'GATES or Cells' is a common element all phases share.
+
+##### Congestion-aware placement using RePlAce
+At the moment, we are constrained by congestion rather than timing. As a result, we are reducing congestion.
+
+There are two phases to the placement process. Global and detailed. Legalisation does not occur during global placement, but it will occur following detailed placement. The first global placement occurs when we run the placement. The primary goal of global placement is to shorten wires.
+
+We first perform the placement ny invoking `run_placement` as shown;
+
+![alt text](<pics/Screenshot from 2025-05-23 21-45-14.png>)
+![alt text](<pics/Screenshot from 2025-05-23 21-45-45.png>)
+
+To visualise the layout after placement, we again invoke the magic command as  
+`magic -T <path_to_openlane_dir>/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.placement.def`
+
+![alt text](<pics/Screenshot from 2025-05-23 21-50-24.png>)
+
+By zooming in using the key `z`, we see the placed cells during the placement stage;
+
+![alt text](<pics/Screenshot from 2025-05-23 21-52-47.png>)
+
+#### 3. Cell design and characterization flow
+##### Inputs for cell design flow
+Gates, flip-flops and buffers are referred to as "Standard Cells" in Cell Design Flow.  'Library' is the section in which these standard cells are located. Additionally, there are several other cells in the collection that are varied in size but have the same functionality.
+
+![alt text](<pics/Screenshot from 2025-05-13 15-09-48.png>)
