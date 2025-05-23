@@ -112,14 +112,14 @@ OpenLANE is tuned for skyWater130nm open PDK but other PDKs can also be used (se
 
 ##### Introduction to openLANE detailed ASIC design flow
 
-![alt text](flow.webp)
+![alt text](pics/flow.webp)
 Ref: This image is downloaded from [openLANE docs](https://openlane.readthedocs.io/en/latest/flow_overview.html)
 
 #### 3. Get familiar to open-source EDA tools
 ##### OpenLANE directory structure in detail
 The image below shows the openlane directoty structure inside the openlane working directory:
 
-![alt text](<Screenshot from 2025-05-23 11-46-39.png>)
+![alt text](<pics/Screenshot from 2025-05-23 11-46-39.png>)
 
 The two folders `drc_tests` and `vsdstdcelldesign` are added later by cloning the repositories and are explained in further sections.
 
@@ -127,47 +127,47 @@ Here we are working in Sky130_fd_sc_hd PDK variant. where, "sky130" is process n
 
 For example, a particular variant `sky130_fd_sc_hd` contains many technology files like verilog, spice, techlef, meglef, mag, gds, cdl, lib, lef, etc. as shown below (level-1 contents).
 
-![alt text](<Screenshot from 2025-05-23 12-03-32.png>)
+![alt text](<pics/Screenshot from 2025-05-23 12-03-32.png>)
 
 ##### Design preparation step
 After entering into the openLANE working directory, we first type `docker` and then invoke the openLANE tool by executing the comand `./flow.tcl -interactive` for interactive openLANE flow. Where the tag `-interactive` is used for the interactive mode, where we will do step by step process. (see figure below)
 
-![alt text](<Screenshot from 2025-05-23 12-17-07.png>)
+![alt text](<pics/Screenshot from 2025-05-23 12-17-07.png>)
 
 Now, we need to first prepare the configurations files and set the environment variables for the design which we are insterested in. Before doing that, if we open the designs folder in openlane, there are many designs that are already built. (see figure below)
 
-![alt text](<Screenshot from 2025-05-23 12-25-33.png>)
+![alt text](<pics/Screenshot from 2025-05-23 12-25-33.png>)
 
 For example, we open up the `picorv32a` design. In this design we can see that there are many files. All of them are required to build the .gds file for picorv32a from its verilog file inside the `src`.
 
-![alt text](<Screenshot from 2025-05-23 12-46-05.png>)
+![alt text](<pics/Screenshot from 2025-05-23 12-46-05.png>)
 
 The `config.tcl` file contains some details about the design and sets up some environment variables. For example, clock period, clock port etc. Please note that, the latest version of openLANE still has the compatibility for `config.tcl` but they recommend to use `config.json`. (see [here](https://openlane.readthedocs.io/en/latest/reference/configuration_files.html))
 
-![alt text](<Screenshot from 2025-05-23 12-37-07.png>)
+![alt text](<pics/Screenshot from 2025-05-23 12-37-07.png>)
 
 Now, we go back to the openlane command line tool window and prpare the files for design flow of `picorv32a`. To do the design preparation for a design, we invoke the command `prep -design picorv32a`.
 
-![alt text](<Screenshot from 2025-05-23 12-50-33.png>)
+![alt text](<pics/Screenshot from 2025-05-23 12-50-33.png>)
 
 ##### Review files after design prep and run synthesis
 After completing the preparation step in the previous subsection, there is a new directory `runs` is created inside the design folder.
 
-![alt text](<Screenshot from 2025-05-23 12-47-56.png>)
+![alt text](<pics/Screenshot from 2025-05-23 12-47-56.png>)
 
 Within the `runs` directory, a directory with a date (in DD-MM format) is created. This detail is also printed during the preparation step run (see previous figure). We open up the recent run directory;
 
-![alt text](<Screenshot from 2025-05-23 12-53-35.png>)
+![alt text](<pics/Screenshot from 2025-05-23 12-53-35.png>)
 
 Here the `config.tcl` file is created to inform the user about what all the default parameters are taken or used in the design preparation step for picorv32a.  
 The directoty `reports` will contain the reports as we run the various stages (presently empty), and the `results` directory will contain the results which will be explained in later sections.  
 In the `tmp` directory, `merged.lef` file is available which was created in preparation time. If we open this merged.lef file, we get all the wire or layer level and cell level information.
 
-![alt text](<Screenshot from 2025-05-23 13-00-43.png>)
+![alt text](<pics/Screenshot from 2025-05-23 13-00-43.png>)
 
 Now, we come back to the openlane and run the very first step, which is synthesis. To do that, we will invoke the command `run_synthesis`, and it will take some time to run the synthesis, and finally, the synthesis will be completed.
 
-![alt text](<Screenshot from 2025-05-23 13-09-19.png>)
+![alt text](<pics/Screenshot from 2025-05-23 13-09-19.png>)
 
 ##### OpenLANE project git link description
 Here, I am providing the two github repos link for the openLANE:
