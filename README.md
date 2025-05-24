@@ -31,10 +31,10 @@ I. [Inception of open-source EDA, openLANE, Sky130 PDK]()
 II. [Good floorplan vs bad floorplan and introduction to library cells](#ii-good-floorplan-vs-bad-floorplan-and-introduction-to-library-cells)
 
 1. [Chip floor planning considerations](#1-chip-floor-planning-considerations)
-    - [Utilization factor and aspect ratio]()
-    - [Concept of pre-placed cells]()
-    - [De-coupling capacitors]()
-    - [Power planning]()
+    - [Utilization factor and aspect ratio](#utilization-factor-and-aspect-ratio)
+    - [Concept of pre-placed cells](#concept-of-pre-placed-cells)
+    - [De-coupling capacitors](#de-coupling-capacitors)
+    - [Power planning](#power-planning)
     - [Pin placement and logical cell placement blockage](#pin-placement-and-logical-cell-placement-blockage)
     - [Steps to run floorplan using openLANE](#steps-to-run-floorplan-using-openlane)
     - [Review floorplan files and steps to view floorplan](#review-floorplan-files-and-steps-to-view-floorplan)
@@ -54,6 +54,7 @@ II. [Good floorplan vs bad floorplan and introduction to library cells](#ii-good
     - [Propagation delay and transition time](#propagation-delay-and-transition-time)
 
 [III. Design library cell using MAGIC layout and ngspice characterization](#iii-design-library-cell-using-magic-layout-and-ngspice-characterization)
+
 1. [Labs for CMOS inverter and ngspice simulations](#1-labs-for-cmos-inverter-and-ngspice-simulations)
     - [IO placer revision](#io-placer-revision)
     - [SPICE deck creation for CMOS inverter](#spice-deck-creation-for-cmos-inverter)
@@ -62,7 +63,7 @@ II. [Good floorplan vs bad floorplan and introduction to library cells](#ii-good
     - [Static and dynamic simulation of CMOS inverter](#static-and-dynamic-simulation-of-cmos-inverter)
     - [Lab steps to git clone vsdstdcelldesign](#lab-steps-to-git-clone-vstcelldesign)
 2. [Inception of layout and CMOS fabriaction process](#2-inception-of-layout-and-cmos-fabrication-process)
-    - [Create active regions]()
+    - [Create active regions](#create-active-regions)
     - [Formation of N-well and P-well]()
     - [Formation of gate terminal]()
     - [Lightly doped drain (LDD) formation]()
@@ -72,8 +73,15 @@ II. [Good floorplan vs bad floorplan and introduction to library cells](#ii-good
     - [Lab steps to create std cell layout and extract spice netlist]()
 
 3. [Sky130 tech file labs](#3-sky130-tech-file-labs)
+    - [Lab steps to create final SPICE deck using sky130 tech](#lab-steps-to-create-final-spice-deck-using-sky130-tech)
+    - [Lab steps to characterize inverter using using sy130 model files](#lab-steps-to-characterize-inverter-using-sky130-model-files)
+    - [Lab introduction to magic-tool options and DRC rules](#lab-introduction-to-magic-tool-options-and-drc-rules)
+    - [Lab introduction to sky130 pdk's and steps to download labs](#lab-introduction-to-sky130-pdks-and-steps-to-download-labs)
+    - [Lab introduction to MAGIC and steps to load sky130 tech-rules](#lab-introduction-to-magic-and-steps-to-load-sky130-tech-rules)
+    - [Lab exercise to fix poly.9 error in sky130 tech-file](#lab-exercise-to-fix-poly9-error-in-sky130-tech-file)
 
 [IV. Pre-layout timing analysis and importance of good clock tree](#iv-pre-layout-timing-analysis-and-importance-of-good-clock-tree)
+
 1. [Timing modelling using delay tables](#1-timing-modelling-using-delay-tables)
     - [Lab steps to convert grid info to track info](#lab-steps-to-convert-grid-info-to-track-info)
     - [Lab steps to convert magic layout to std cell LEF](#lab-steps-to-convert-magic-layout-to-std-cell-lef)
@@ -83,6 +91,7 @@ II. [Good floorplan vs bad floorplan and introduction to library cells](#ii-good
 4. [Timing analysis with real clocks using openSTA](#4-timing-analysis-with-real-clocks-using-opensta)
 
 [V. Final steps for RTL2GDS using tritonRoute and openLANE](#v-final-steps-for-rtl2gds-using-tritonroute-and-openlane)
+
 1. [Routing and design rule check (DRC)](#1-routing-and-design-rule-check-drc)
 2. [Power distribution network (PDN) and routing](#2-power-distribution-network-pdn-and-routing)
 3. [TritonRoute features](#3-tritonroute-features)
@@ -564,9 +573,34 @@ Therefore, the propagtion delay is $ 2.20726\, ns - 2.15000\,ns \approx 0.05726\
 
 Therefore, the propagtion delay is $ 4.07544\, ns - 4.05003\,ns \approx 0.02541\,ns$.
 
-
 ##### Lab introduction to magic-tool options and DRC rules
+The various questions regarding the magic tool like
+**Magic DRC**:  
+- How magic does DRC?
+- Why magic has different DRC styles for a single PDK?
+- What are the basic and complicated DRC rules types?
+
+are answered in the detailed [documentation](http://opencircuitdesign.com/magic/magic_docs.html).
+
+
+In addition to it, there are tutorils such as How to use magic?. The CIF output which is the standard output for mask format.
+The DRC section (tutorial-6) for various types of rules. 
+
 ##### Lab introduction to sky130 pdk's and steps to download labs
+Google in collaboration with skywater technology released the skywater130 process design kit (PDK) which is a FOSS 130nm production PDK. For documentation, please visit the github [page](https://github.com/google/skywater-pdk) and the documentation [link](https://skywater-pdk.readthedocs.io/en/).
+
+Now, we donwload the labs by using the `wget` tool and invoke the command to get a tarball compressed file.
+`wget http://opencircuitdesign.com/open_pdks/archive/drc_tests.tgz`. Now to decompress the tarball, we use a command
+`tar xfz drc_tests.tgz`. Now, if we open up the uncompressed directory `drc_tests`, the structure is
+
+![alt text](<pics/Screenshot from 2025-05-24 20-13-25.png>)
+
+There are many `.mag` files that can directly be loaded into the `magic` tool. Note that there is a `.magicrc` file that actually is a configuration file (or a startup script) and can be customized by an user to load the predefined configurations in magic (see image below),
+
+![alt text](<pics/Screenshot from 2025-05-24 20-17-40.png>)
+
+The setting `tech load sky130A.tech` automatically loads the bundled local `sky130A.tech` file inside `drc_tests` directory and everytime the magic tool is opened and hence we can file any of the `.mag` file just using `magic *.mag`.
+
 ##### Lab introduction to magic and steps to load sky130 tech-rules
 ##### Lab exercise to fix poly.9 error in sky130 tech-file
 
@@ -574,17 +608,16 @@ Therefore, the propagtion delay is $ 4.07544\, ns - 4.05003\,ns \approx 0.02541\
 In this topic, we will learn about the pre-layout timing analysis using various open-source tools and learn about the good clock tree.
 #### 1. Timing modelling using delay tables
 ##### Lab steps to convert grid info to track info
-Till now, we have done design setup, floor plan and placement, and how to extract spice file out of a given .mag file and did the characterization. So while doing the characterization, we deviated from the `openLANE` flow and were doing the simulations in `ngspice` simulator and therefore a natural question is to ask where does this all get connected?
+Till now, we have done design setup, floor plan and placement, and how to extract spice file out of a given `.mag` file and did the characterization. So while doing the characterization, we deviated from the `openLANE` flow and were doing the simulations in `ngspice` simulator and therefore a natural question is to ask where does this all get connected?
 
-`OpenLANE` is actually a placement and routing (PnR) tool and for placement of any cell we do not require the entire .mag file information. So if we open a .mag file:
+`OpenLANE` is actually a placement and routing (PnR) tool and for placement of any cell we do not require the entire `.mag` file information. So if we open a `.mag` file:
 
 > magic -T <path to .tech file> <path to .mag file>
 
-All the informations such as the power, ground, port and the logic part is contained in the .mag file and we do need all of these informations for placement of the cell. The only information which we will be requiring is the PR boundary (inner box), the power and the ground ports, the i/o ports. In fact, this is what is contained by the .lef file and the .lef file protects the IP or Macro.
+All the informations such as the power, ground, port and the logic part is contained in the `.mag` file and we do need all of these informations for placement of the cell. The only information which we will be requiring is the PR boundary (inner box), the power and the ground ports, the i/o ports. In fact, this is what is contained by the `.lef` file and the `.lef` file protects the IP or Macro.
 
-Therefore, we will first extract the .lef file from the .mag file and then we will try to see if the extracted .lef file could be plugged into the picorv32a design flow.
-Till now, we were working with the std cell library that came along with the openLANE and were doing the flow steps of picorv32a.
-So How the cell which we designed can be plugged into the openLANE flow of picorv32a?
+Therefore, we will first extract the `.lef` file from the `.mag` file and then we will try to see if the extracted `.lef` file could be plugged into the picorv32a design flow.
+Till now, we were working with the std cell library that came along with the openLANE and were doing the flow steps of picorv32a. So How the cell which we designed can be plugged into the openLANE flow of picorv32a?
 
 For PnR, we need to follow certain guidlines such as
 - the i/o ports must lie on the intersection of the vertical and the horizontal tracks
@@ -657,7 +690,7 @@ This returns the TNS (total negative slack) and the wns (worst negative slack) t
 ##### Introduction to delay tables
 We start with the two gates (AND and OR) and saw the feature of the AND gate that will allow the propagation of the clock to the complete clock tree.
 
-![power aware cts1](<pics/d4/sk1-L4/Screenshot from 2025-05-18 16-11-10.png>)
+<img src="pics/Screenshot from 2025-05-18 16-11-10.png" alt="power aware cts1" width=80%>
 
 We had this 1 pin (enable pin) of AND gate which was connected to logic 1 and whenever the enable pin was connected to logic 1 then only the clock will propagate through the gate to the rest of the circuit else it wont be. If the enable pin is at logic 0 the clock will be blocked at the input itself and it will not propagte through the gate to the rest of the circuit. Similalry for the OR gate which can also be used for such a purpose. Whenever the enable pin of the OR gate is at the logic 0 the clock propgates through gate to the rest of the circuit otherwise clock will be blocked at the input.
 
@@ -667,55 +700,51 @@ This is referred to as clock gating technique. We are gating the clock to propag
 _How do we use this in a clock tree?_
 We may think of blindly swapping the buffers with the gates and use the clock gating technique. But is this right? or what can go wrong?
 
-<img src="pics/d4/sk1-L4/Screenshot from 2025-05-18 16-28-34_cropped.png" alt="Power Aware CTS2" width=50%>
+<img src="pics/Screenshot from 2025-05-18 16-28-34_cropped.png" alt="Power Aware CTS2" width=90%>
 
 Before delving into this, we do some time analysis of the clock tree we have
 
-![alt text](<pics/d4/sk1-L4/Screenshot from 2025-05-18 17-16-54.png>)
+<img src="pics/Screenshot from 2025-05-18 17-16-54.png" width=90%>
 
 There are some observations shown in the figure itself.
 1. The capacitance or the load at the output node of each and every buffers in a clock tree is not same, it is varying.
-2. Due to varying output capacitances of each and every buffer, the input transition is also varying and so for all the buffers present in the above clock tree, the input transition is also not constant and its also varying. It varyies in a range say $(10\,ps -- 100\,ps)$.
+2. Due to varying output capacitances of each and every buffer, the input transition is also varying and so for all the buffers present in the above clock tree, the input transition is also not constant and its also varying. It varyies in a range say $(10\,ps - 100\,ps)$.
 Therefore, we have varying input transition at the inpts of the buffers and the varying ouput load at the output of the buffer.
 
 Therefore we will have variety of delays and therefore engineers introduced the concept of **delay tables**.
 
-_Delay table for CBUF`1`_
+_Delay table for CBUFF1_
 
-A buffer of size-1 means it will have the PMOS and NMOS of size-1 and similarly, a buffer of size-2 will have PMOS and NMOS of size-2. Basically the size of PMOS or NMOS in nothing but $w/l$-ratio. A bigger size PMOS, we are actually recuing the resistance that changes the $\tau = R\,C$-delay. Therefore, we have individual/exclusive delay tables for each of the gates with each and every size.k
+A buffer of size-1 means it will have the PMOS and NMOS of size-1 and similarly, a buffer of size-2 will have PMOS and NMOS of size-2. Basically the size of PMOS or NMOS in nothing but $w_{c}/l_{c}$-ratio. A bigger size PMOS, we are actually recuing the resistance that changes the $\tau = R\,C$-delay. Therefore, we have individual/exclusive delay tables for each of the gates with each and every size.
 
-For example, if the input transition is varying and the output buffer capcitance is varying from 10fF-110fF.
+Eventually this delay table became the timing model of that particular buffer of size-1. The buffer will have a PMOS and NMOS and it has fixed size $V_t$ and has a delay table like this. For buffer of size-2 there is a separate delay table that is also created. The delay tables became the timing models of the buffers of given sizes.
 
-filling up the delay table...
-
-Eventually this delay table became the timing model of that particular buffer of size-1. The buffer will have a PMOS and NMOS and it has fixed size V_t and has a delay table like this.
-For buffer of size-2 there is a separate delay table that is also created.
-The delay tables became the timing models of the buffers of given sizes. 
+For example, if the input transition is varying from say $20\,ps - 80\,ps$ and the output buffer capcitance is varying from $10\,f\text{F}-110\,f\text{F}$. We see that the delay table is filled up by assigning the numbers in the same way as a matrix by looking the intersection point of a row and the columns for given value.
 
 ##### Delay table usage
 Delay tables are the representation of the delays for the different cells in a clock tree. So similar delay tables we will be having for differnt kind of delay tables for various gates such as AND, OR, XOR etc. All the gates will have individual delay table. Here we see the delay table of the buffers of the clock tree circuit of the previous subsection.
 
-![alt text](<pics/d4/sk1-L4/Screenshot from 2025-05-18 17-30-11.png>)
+<img src="pics/Screenshot from 2025-05-18 17-30-11.png" alt="alt text" width=90%>
 
 How to read delay table? The particular buffer is taken out of the circuit and is charaterized for a range of input slews and a range of output load. For examaple, if the input slew is 60~ps and the ouput load is 70fF for a buffer of size-1, the delya table contains a value $x16$.
 
-![alt text](<pics/d4/sk1-L4/Screenshot from 2025-05-18 17-41-34.png>)
+<img src="pics/Screenshot from 2025-05-18 17-41-34.png" alt="alt text" width=90%>
 
 The values that are not avaialbale in the delay table that are extrapolated from the given data. Essentially, we find some equations from the given data (delay table) for finding out missing numbers.
 
 The objective is to find the delay for the top buffer of size-2 (see figure below) when the given input slew is 40~ps and the delay of the buff-1 is $x9'$ and the finding this for all the buffers in the circuit, we will be able to obtain the _latency_ (clock latency) at the output terminals;
 
-![alt text](<pics/d4/sk1-L4/Screenshot from 2025-05-18 17-46-40.png>)
+<img src="pics/Screenshot from 2025-05-18 17-46-40.png" alt="alt text" width=90%>
 
 So now we proceed for calculating the delay of the buffer of size-2 and then calcuating the latency from the clock port to clock end points. The node-A is connected at the input to both size-2 buffers and therefore it is common to both the size-2 buffers and let us assume that a input slew at the input to both the size-2 buffers is of $60\,ps$, where this transition itself came fron the input transition to size-1 buffer and its output load capacitance and therefore it is also a $f(\text{input transition, output load})$. Actually, Similar to delay table of cells, we have the transition table for buffers also but this is what we are not looking into this course.
 
-![alt text](<pics/d4/sk1-L5-6comb/Screenshot from 2025-05-18 23-05-25.png>)
+<img src="pics/Screenshot from 2025-05-18 23-05-25.png" alt="alt text" width=90%>
 
 The two size-2 buffers are identical with each other, connected to the same input node A and driving the same loads at nodes B and C of $50\,fF$, and therefore the delay value of $y15$ is valid for both the buffers. Now we calculate the latency from the left-most input node (input to size-1 buffer) and the clock end terminals (connected to the four flip-flops) as
 $$ \text{latency} = x9' + y15 $$
 for all the four end terminals connected to the flip flops. Here, we assumed that the wires delay is null.
 
-![alt text](<pics/d4/sk1-L5-6comb/Screenshot from 2025-05-18 23-11-33.png>)
+<img src="pics/Screenshot from 2025-05-18 23-11-33.png" alt="alt text" width=90%>
 
 Now, since the latency of all the four terminals connected to the flip flops is same therefore the skew between any two pair of clock end terminals is 0.
 
@@ -725,7 +754,7 @@ In an other example, we consider two different-type buffers at the level-2 (top 
 
 Therefore, these things need to be taken care of at very early stages of building the clock tree. If a small non-zero skew with this clock tree propagates down the complete chain of say millions of clock tree, Then it will be result into a large skew number.
 
-![alt text](<pics/d4/sk1-L5-6comb/Screenshot from 2025-05-18 23-29-06.png>)
+<img src="pics/Screenshot from 2025-05-18 23-29-06.png" alt="alt text" width=90%>
 
 _Power aware CTS_
 
