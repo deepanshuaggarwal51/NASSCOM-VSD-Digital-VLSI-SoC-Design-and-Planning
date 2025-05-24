@@ -502,6 +502,73 @@ To create these pockets, a $\text{SiO}_2$ oxide-layer of almost $\sim 40\,nm$ th
 _Mask_: Any kind of layout in custom design is converted to a mask (protection-layer).
 
 #### 3. Sky130 tech file labs
+##### Lab steps to create final SPICE deck using sky130 tech
+We use the magic file (`.mag` file) by cloning the [github repo](https://github.com/nickson-jose/vsdstdcelldesign) to visualise the layout of a CMOS inverter. Now, we use the command line console window with the magic tool to extract a file with extension `<fname>.ext` by invoking the command `ext`. Then, we create a SPICE file with extension `<fname>.spice` by invoking the commands
+`ext2spice cthresh 0 rthresh 0`, this gives all the parasitic capacitances information as well. Then finally, `ext2pice` as shown in figure below,
+
+![alt text](<pics/Screenshot from 2025-05-24 16-52-59.png>)
+
+Within the directory, we get the `.spice` file. Let us open the SPICE file and look for the various information present in the file;
+
+![alt text](<pics/Screenshot from 2025-05-24 16-59-23.png>)
+
+As explained before, this contains the connectivity information for PMOS (`M1001`) and NMOS (`M1000`) and a conversion scale.
+- To obtain the conversion scale, we see the smallest grid size using magic tool.
+- We also need to include the lib files for NMOS and PMOS for ngspice simulator to run the DC and transient analysis.
+- We also need to add the various power supplies. For eaxmple, `VDD VPWR 0 3.3V` implies that the power suppy VDD is connceted between VPWR and 0 nodes and it has the value $3.3\,V$. In addition to it, the pulse information is written as `Va A VGND PULSE(0V 3.3V 0 0.1ns 0.1ns 2ns 4ns)`;
+- We also need to insert a line for the transient analysis; `.tran 1n 20n`. And finally, we add a subsection (to run the analysis)
+```
+.control
+run
+.endc
+```
+
+![alt text](<pics/Screenshot from 2025-05-24 17-21-27.png>)
+
+##### Lab steps to characterize inverter using sky130 model files
+Now, we run the spice simulation using the detailed `.spice` by invoking the command  
+`ngspice sky130_inv.spice` and the output contains the various information like temperature at which the analysis is done and the number of data points,
+
+![alt text](<pics/Screenshot from 2025-05-24 17-26-22.png>)
+
+Then, to plot the output vs input, we need to invole a command `plot y vs time a` and we get
+
+![alt text](<pics/Screenshot from 2025-05-24 17-29-40.png>)
+
+We see that there are some spikes at the falling edges and to reduce them, we incresase the value of C3 which is connected between Y and VGND from $0.279f\text{F}$ to $2f\text{F}$; then the plot becomes
+
+![alt text](<pics/Screenshot from 2025-05-24 17-42-17.png>)
+
+Now, we characterize the transient plot by obtaining four parameters as discussed in previous the section, which are
+- **Rise transition time**: The time taken by the output waveform to transit from 20% to 80% of its maximum value ($V_{\text{dd}}$).
+
+![alt text](<pics/Screenshot from 2025-05-24 17-55-14.png>)
+
+Therefore, the rise transition time is $ 2.24047\, ns - 2.17993\,ns \approx 0.06054\,ns$.
+
+- **Fall transition time**: The time taken by the output waveform to fall from 80% to 20% of its maximum value ($V_{\text{dd}}$).
+
+![alt text](<pics/Screenshot from 2025-05-24 18-01-52.png>)
+
+Therefore, the fall transition time is $ 4.09336\, ns - 4.05011\,ns \approx 0.04325\,ns$.
+
+- **Propagation delay**: The time difference between 50% of the output has arisen and 50% of the input has fallen;
+
+![alt text](<pics/Screenshot from 2025-05-24 18-10-54.png>)
+
+Therefore, the propagtion delay is $ 2.20726\, ns - 2.15000\,ns \approx 0.05726\,ns$.
+
+- **Cell fall delay**: The time difference between the points when output has fallen to its 50 % and the input has arisen to its 50%;
+
+![alt text](<pics/Screenshot from 2025-05-24 18-14-08.png>)
+
+Therefore, the propagtion delay is $ 4.07544\, ns - 4.05003\,ns \approx 0.02541\,ns$.
+
+
+##### Lab introduction to magic-tool options and DRC rules
+##### Lab introduction to sky130 pdk's and steps to download labs
+##### Lab introduction to magic and steps to load sky130 tech-rules
+##### Lab exercise to fix poly.9 error in sky130 tech-file
 
 ### IV. Pre-layout timing analysis and importance of good clock tree
 In this topic, we will learn about the pre-layout timing analysis using various open-source tools and learn about the good clock tree.
