@@ -1385,11 +1385,11 @@ Now you have a good idea for the open-source EDA tools, please go ahead and be a
 
 ## Acknowledgements
 
-Obviously this could'nt have been possible without this detailed and an exciting workshop and therefore I would like to thank @kunalghosh (cofounder) of VLSI system design (VSD) and the entire team of VSD. For more details, please visit
+Obviously this could'nt have been possible without this detailed and an exciting workshop and therefore I would like to thank @kunalghosh (Founder and CEO) of VLSI system design (VSD) and the entire team of VSD. For more details, please visit
 
 VSD Website: [www.vlsisystemdesign.com](www.vlsisystemdesign.com)  
-Github (Kunal Ghosh): []()  
-Github (Nickson Jose): []()
+Github (Kunal Ghosh): [kunalg123](https://github.com/kunalg123)  
+Github (Nickson Jose): [nickson-jose](https://github.com/nickson-jose)
 
 </span>
 
